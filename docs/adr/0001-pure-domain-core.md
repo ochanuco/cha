@@ -2,4 +2,4 @@
 Status: Accepted
 
 cha-core contains reusable history/versioning semantics only.
-It has no dependencies on Aracha, Cloudflare, OKF, Markdown, HTTP, storage backends, or authentication.
+It has no dependencies on any host application, Cloudflare, OKF, Markdown, HTTP, storage backends, or authentication.
