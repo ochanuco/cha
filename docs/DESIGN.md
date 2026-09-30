@@ -15,7 +15,7 @@ No standalone CLI is required yet.
 ## Hard non-dependencies
 
 `cha-core` must not depend on:
-- Aracha
+- any host application
 - Cloudflare
 - Durable Objects
 - D1

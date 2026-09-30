@@ -1,8 +1,13 @@
 # cha WASM ABI — `cha-abi/1`
 
-Status: PoC ABI, fixed for the Aracha vertical slice.
+Status: PoC ABI.
 
-This document fills in the ABI that `WASM_CONTRACT.md` leaves open.
+This is the contract between cha and the host application that embeds it.
+
+- cha performs no network or storage I/O; the host owns persistence, coordination, and ID generation.
+- cha is the single implementation of the BlobId and RevisionId algorithms. A host persists what cha returns and does not recompute it.
+- `kind`, `state.host`, `attachment_id`, and ActorId are opaque host data that cha never interprets.
+
 `cha-core` exposes the same functions natively (`cha_core::api`), string in / string out, and `cha-wasm` forwards to them unchanged.
 
 ## Exports
