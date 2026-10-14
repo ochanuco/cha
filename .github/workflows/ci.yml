@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ci:
+    uses: ochanuco/.github/.github/workflows/rust.yml@e5102a8ff65b3c15a2afa263d4970dbbe6538862 # v1.1.0
+    with:
+      toolchain: "1.98.1"
+      targets: wasm32-unknown-unknown
+      tools: wasm-bindgen-cli@0.2.127
+      setup-node: "24"
+      run: |
+        cargo fmt --all -- --check
+        cargo clippy --workspace --all-targets -- -D warnings
+        cargo test --workspace
+        python3 scripts/check_vectors.py
+        ./scripts/build-wasm.sh
+        node tests/wasm/run_vectors.mjs
