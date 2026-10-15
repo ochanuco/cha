@@ -14,12 +14,32 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # Renovate が更新するのは mise.toml なので、CI の Rust と wasm-bindgen-cli の版もそこから読む
+  versions:
+    runs-on: ubuntu-latest
+    outputs:
+      rust: ${{ steps.read.outputs.rust }}
+      wasm-bindgen: ${{ steps.read.outputs.wasm-bindgen }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: read
+        run: |
+          python3 - >> "$GITHUB_OUTPUT" <<'PY'
+          import tomllib
+          tools = tomllib.load(open("mise.toml", "rb"))["tools"]
+          print(f"rust={tools['rust']['version']}")
+          print(f"wasm-bindgen={tools['cargo:wasm-bindgen-cli']}")
+          PY
+
   ci:
+    needs: versions
     uses: ochanuco/.github/.github/workflows/rust.yml@e5102a8ff65b3c15a2afa263d4970dbbe6538862 # v1.1.0
     with:
-      toolchain: "1.98.1"
+      toolchain: ${{ needs.versions.outputs.rust }}
       targets: wasm32-unknown-unknown
-      tools: wasm-bindgen-cli@0.2.127
+      tools: wasm-bindgen-cli@${{ needs.versions.outputs.wasm-bindgen }}
       setup-node: "24"
       run: |
         cargo fmt --all -- --check
