@@ -1,4 +1,11 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
   extends: ['github>ochanuco/.github', 'github>ochanuco/.github:automerge'],
+  packageRules: [
+    {
+      // wasm-bindgen-cli は Cargo.toml の wasm-bindgen と同じ版でないと動かないので、必ず同じ PR で上げる
+      matchPackageNames: ['/^(cargo:)?wasm-bindgen(-cli)?$/'],
+      groupName: 'wasm-bindgen',
+    },
+  ],
 }
