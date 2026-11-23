@@ -75,7 +75,11 @@ def check_prepared(where, prepared):
 def main():
     checked = 0
     for path in sorted(VECTORS.glob("*.json")):
-        doc = json.loads(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
+        # Raw U+2028/U+2029 are valid JSON but break some JS loaders; write them as \u escapes.
+        for c in ("\u2028", "\u2029"):
+            assert c not in text, "%s: raw U+%04X, write it as \\u%04x" % (path.name, ord(c), ord(c))
+        doc = json.loads(text)
         function = doc["function"]
         assert path.stem == function
         for case in doc["cases"]:
